@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Makes it mobile-friendly -->
+    <title>Family Rock-Paper-Scissors Showdown</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f0f0; }
+        h1 { color: #4CAF50; }
+        .button { padding: 10px 20px; margin: 10px; font-size: 16px; cursor: pointer; }
+        .result { font-size: 18px; color: #333; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Family Rock-Paper-Scissors Showdown</h1>
+    <p>This is a fun game for parents and children! Choose your option and play.</p>
+    <p id="gameStatus"></p>
+    <button class="button" onclick="startGame(1)">Play vs. Human (2 Players)</button>
+    <button class="button" onclick="startGame(2)">Play vs. Computer</button>
+    
+    <div id="gameArea" style="display: none;">
+        <p id="player1Prompt">Player 1, choose: <button onclick="makeChoice('rock', 1)">Rock</button> <button onclick="makeChoice('paper', 1)">Paper</button> <button onclick="makeChoice('scissors', 1)">Scissors</button></p>
+        <p id="player2Prompt" style="display: none;">Player 2, choose: <button onclick="makeChoice('rock', 2)">Rock</button> <button onclick="makeChoice('paper', 2)">Paper</button> <button onclick="makeChoice('scissors', 2)">Scissors</button></p>
+        <p id="result" class="result"></p>
+        <button id="nextRound" style="display: none;" onclick="nextRound()">Next Round</button>
+    </div>
+
+    <script>
+        // JavaScript code for the game (similar to Python logic, but adapted for web)
+        let player1Score = 0;
+        let player2Score = 0;
+        let currentRound = 1;
+        let maxRounds = 3;
+        let gameMode = null;  // 1 for two players, 2 for vs. computer
+        let player1Choice = null;
+        let player2Choice = null;
+
+        function startGame(mode) {
+            gameMode = mode;
+            player1Score = 0;
+            player2Score = 0;
+            currentRound = 1;
+            document.getElementById('gameStatus').innerHTML = "Game started! Let's play.";
+            document.getElementById('gameArea').style.display = 'block';  // Show game area
+            document.getElementById('result').innerHTML = '';  // Clear previous results
+            if (mode === 2) {
+                document.getElementById('player2Prompt').style.display = 'none';  // Hide for computer mode
+            }
+        }
+
+        function makeChoice(choice, player) {
+            if (player === 1) {
+                player1Choice = choice;
+                document.getElementById('player1Prompt').innerHTML = `Player 1 chose: ${choice}. Waiting for Player 2...`;
+                if (gameMode === 1) {
+                    document.getElementById('player2Prompt').style.display = 'block';  // Show Player 2 options
+                } else if (gameMode === 2) {
+                    player2Choice = getComputerChoice();  // Computer chooses
+                    determineWinner();
+                }
+            } else if (player === 2) {
+                player2Choice = choice;
+                document.getElementById('player2Prompt').style.display = 'none';  // Hide after choice
+                determineWinner();
+            }
+        }
+
+        function getComputerChoice() {
+            const choices = ['rock', 'paper', 'scissors'];
+            return choices[Math.floor(Math.random() * choices.length)];  // Random choice for computer
+        }
+
+        function determineWinner() {
+            if (player1Choice === player2Choice) {
+                document.getElementById('result').innerHTML = "It's a tie! No points this round.";
+            } else if (
+                (player1Choice === 'rock' && player2Choice === 'scissors') ||
+                (player1Choice === 'scissors' && player2Choice === 'paper') ||
+                (player1Choice === 'paper' && player2Choice === 'rock')
+            ) {
+                player1Score++;
+                document.getElementById('result').innerHTML = `Player 1 wins this round! (${player1Choice} beats ${player2Choice})`;
+            } else {
+                player2Score++;
+                document.getElementById('result').innerHTML = `Player 2 ${gameMode === 2 ? '(Computer)' : ''} wins this round! (${player2Choice} beats ${player1Choice})`;
+            }
+            
+            if (currentRound < maxRounds) {
+                document.getElementById('nextRound').style.display = 'block';  // Show next round button
+            } else {
+                endGame();
+            }
+        }
+
+        function nextRound() {
+            currentRound++;
+            player1Choice = null;
+            player2Choice = null;
+            document.getElementById('player1Prompt').innerHTML = 'Player 1, choose: <button onclick="makeChoice(\'rock\', 1)">Rock</button> <button onclick="makeChoice(\'paper\', 1)">Paper</button> <button onclick="makeChoice(\'scissors\', 1)">Scissors</button>';
+            document.getElementById('player2Prompt').style.display = 'none';
+            document.getElementById('result').innerHTML = '';
+            document.getElementById('nextRound').style.display = 'none';
+        }
+
+        function endGame() {
+            document.getElementById('gameStatus').innerHTML = `Game Over! Player 1 Score: ${player1Score} | Player 2 Score: ${player2Score}`;
+            if (player1Score > player2Score) {
+                document.getElementById('result').innerHTML = "Player 1 wins the game!";
+            } else if (player2Score > player1Score) {
+                document.getElementById('result').innerHTML = "Player 2 wins the game!";
+            } else {
+                document.getElementById('result').innerHTML = "It's a tie!";
+            }
+        }
+    </script>
+</body>
+</html>
